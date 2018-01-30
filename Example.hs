@@ -26,8 +26,8 @@ getUserInfo :: IO (T H User)
 getUserInfo = (pure . pure) $ User "Matthias Pall" "Gissurarson" (0,0) 26
 
 lookupRestaurants :: Loc -> [Restaurant]
-lookupRestaurants (0,0) = [ Restaurant "The Nexus" (0,0) 3
-                          , Restaurant "The Padded Duckling" (1,2) 1]
+lookupRestaurants (0,0) = [ Restaurant "Bhoga" (0,0) 3
+                          , Restaurant "Koka" (1,2) 1]
 lookupRestaurants _ = []
 
 -- Trusted code base, i.e. functions that we deem reveal little enough
@@ -43,11 +43,12 @@ bestNearbyRestaurant :: T H User -> T L (Maybe Restaurant)
 bestNearbyRestaurant = trust (listToMaybe . sortOn rating
                               . lookupRestaurants . location)
 
-isInNationalPark :: T H User -> T L Bool
-isInNationalPark = trust (\t -> location t == (0,0))
+isInGothenburg :: T H User -> T L Bool
+isInGothenburg = trust (inGothenburg . location)
+  where inGothenburg (x,y) = (x >= -5) && (x <= 5) && (y >= -5) && (y <= 5)
 
 isAllowedToDrink :: T H User -> T L Bool
-isAllowedToDrink = trust (\t -> age t >= 20)
+isAllowedToDrink = trust ((>= 20) . age)
 
 -- We allow reading of public information
 readPublic :: T L a -> a
@@ -55,7 +56,6 @@ readPublic = unT
 
 
 main :: IO ()
--- main = return ()
 main = do user <- getUserInfo
           info <- pure (_ user)
           print (readPublic info)
