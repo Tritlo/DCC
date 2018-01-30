@@ -16,7 +16,7 @@ import Lattice
 
 # if !MIN_VERSION_base(4,11,0)
 import Data.Semigroup ( Semigroup, (<>) )
-#endif
+# endif
 
 -- The `T` monad family from the DCC paper
 newtype T (l :: Lattice) a = T { unT :: a }
